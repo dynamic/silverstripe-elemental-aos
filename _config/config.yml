@@ -1,0 +1,10 @@
+---
+Name: dynamic-elemental-aos
+---
+DNADesign\Elemental\Models\BaseElement:
+  extensions:
+    - Dynamic\Elemental\AOS\Extension\ElementAOSExtension
+
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - Dynamic\Elemental\AOS\Extension\AOSRequirementsExtension
