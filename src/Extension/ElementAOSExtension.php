@@ -3,11 +3,11 @@
 namespace Dynamic\Elemental\AOS\Extension;
 
 use DNADesign\Elemental\Models\BaseElement;
+use Dynamic\Elemental\AOS\Forms\AOSDropdownField;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 
@@ -107,21 +107,12 @@ class ElementAOSExtension extends Extension
 
         $fields->addFieldsToTab('Root.Animation', [
             CheckboxField::create('DisableAOS', 'Disable scroll animation'),
-            DropdownField::create('AOS', 'Scroll animation', Config::inst()->get(self::class, 'AOSOptions'))
-                ->setEmptyString(sprintf('Default (%s)', $this->getDefaultAnimationLabel()))
+            AOSDropdownField::create('AOS', 'Scroll animation', Config::inst()->get(self::class, 'AOSOptions'))
                 ->setDescription(
                     'Played once when the block scrolls into view. '
                     . 'Visitors who prefer reduced motion never see it.'
                 ),
         ]);
-    }
-
-    private function getDefaultAnimationLabel(): string
-    {
-        $default = (string) Config::inst()->get(self::class, 'default_animation');
-        $options = (array) Config::inst()->get(self::class, 'AOSOptions');
-
-        return $options[$default] ?? $default;
     }
 
     public static function isEnabled(): bool
