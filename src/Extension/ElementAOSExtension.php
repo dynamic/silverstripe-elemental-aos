@@ -63,7 +63,6 @@ class ElementAOSExtension extends Extension
      */
     private static array $defaults = [
         'DisableAOS' => false,
-        'AOS' => 'fade-up',
     ];
 
     /**
@@ -101,6 +100,10 @@ class ElementAOSExtension extends Extension
 
     public function updateCMSFields(FieldList $fields): void
     {
+        // $db fields get an auto-built scaffold field; remove it so it never shows up raw,
+        // whether or not the module is enabled.
+        $fields->removeByName(['AOS', 'DisableAOS']);
+
         if (!static::isEnabled()) {
             return;
         }

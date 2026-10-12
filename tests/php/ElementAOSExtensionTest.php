@@ -2,11 +2,13 @@
 
 namespace Dynamic\Elemental\AOS\Tests;
 
+use Dynamic\Elemental\AOS\Extension\AOSRequirementsExtension;
 use Dynamic\Elemental\AOS\Extension\ElementAOSExtension;
 use Dynamic\Elemental\AOS\Tests\Model\TestElement;
 use Dynamic\Elemental\AOS\Tests\Model\TestExcludedElement;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\View\Requirements;
 
 class ElementAOSExtensionTest extends SapphireTest
 {
@@ -78,5 +80,51 @@ class ElementAOSExtensionTest extends SapphireTest
         Config::modify()->set(ElementAOSExtension::class, 'default_animation', 'fade-in');
 
         $this->assertSame(' data-aos="fade-in"', (string) TestElement::create(['AOS' => ''])->AOSAttributes);
+    }
+
+    public function testFreshElementFollowsConfiguredDefault(): void
+    {
+        Config::modify()->set(ElementAOSExtension::class, 'default_animation', 'fade-in');
+
+        $this->assertSame(' data-aos="fade-in"', (string) TestElement::create()->AOSAttributes);
+    }
+
+    public function testCmsFieldsWhenEnabled(): void
+    {
+        $fields = TestElement::create()->getCMSFields();
+
+        $this->assertNotNull($fields->fieldByName('Root.Animation'));
+        $this->assertSame('fade-up', $fields->dataFieldByName('AOS')->getValue());
+        $this->assertNotNull($fields->dataFieldByName('DisableAOS'));
+    }
+
+    public function testNoAOSFieldsAreShownWhenDisabled(): void
+    {
+        Config::modify()->set(ElementAOSExtension::class, 'enabled', false);
+
+        $fields = TestElement::create()->getCMSFields();
+
+        $this->assertNull($fields->fieldByName('Root.Animation'));
+        $this->assertNull($fields->dataFieldByName('AOS'));
+        $this->assertNull($fields->dataFieldByName('DisableAOS'));
+    }
+
+    public function testAssetsLoadOnlyWhenEnabled(): void
+    {
+        $load = function (): array {
+            Requirements::clear();
+            (new AOSRequirementsExtension())->onAfterInit();
+
+            return array_keys(Requirements::backend()->getJavascript());
+        };
+
+        $this->assertNotEmpty($load());
+
+        Config::modify()->set(ElementAOSExtension::class, 'enabled', false);
+        $this->assertEmpty($load());
+
+        Config::modify()->set(ElementAOSExtension::class, 'enabled', true);
+        Config::modify()->set(AOSRequirementsExtension::class, 'include_assets', false);
+        $this->assertEmpty($load());
     }
 }

@@ -25,8 +25,8 @@ Add `$AOSAttributes` inside the opening tag of your element holder
 ```
 
 For `ElementHolder_VirtualLinked.ss` use `$LinkedElement.AOSAttributes`. The variable renders
-nothing when an element is disabled or excluded. Themes based on
-`dynamic/silverstripe-essentials-theme` already include it.
+nothing when an element is disabled or excluded. Without it in the holder template, nothing
+animates, even though the CMS tab and assets are present.
 
 ## Configuration
 
@@ -46,8 +46,8 @@ Dynamic\Elemental\AOS\Extension\AOSRequirementsExtension:
 `excluded_classes` and `AOSOptions` are arrays, so YAML merges additively across config files.
 To replace them, use `Config::modify()->set()` in `_config.php`.
 
-New elements default to `fade-up`. Elements saved before the module was installed have no stored
-value and also render `default_animation`; set `enabled: false`, or tick *Disable* per element,
+New and existing elements with no stored value render `default_animation` (and the CMS dropdown
+preselects it); set `enabled: false`, or tick *Disable* per element,
 to opt out.
 
 ## Data
